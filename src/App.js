@@ -31,7 +31,9 @@ function App() {
     }
 
     // Delete Task action zaczyna sie najwyzej i schodzi nizej: App.js -> Tasks.js -> Task.js
-    const deleteTask = (id) => {
+    const deleteTask = async (id) => {
+        await fetch(`http://localhost:5000/tasks/${id}`, {method: "DELETE"})
+
         setTasks(tasks.filter((task) => task.id !== id))
     }
 
