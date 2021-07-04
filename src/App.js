@@ -23,6 +23,12 @@ function App() {
         return await res.json()
     }
 
+    // Fetch Task
+    const fetchTask = async (id) => {
+        const res = await fetch(`http://localhost:5000/tasks/${id}`)
+        return await res.json()
+    }
+
     // Add Task
     const addTask = async (task) => {
         const res = await fetch(
@@ -40,16 +46,35 @@ function App() {
 
     // Delete Task action zaczyna sie najwyzej i schodzi nizej: App.js -> Tasks.js -> Task.js
     const deleteTask = async (id) => {
-        await fetch(`http://localhost:5000/tasks/${id}`, {method: "DELETE"})
+        await fetch(
+            `http://localhost:5000/tasks/${id}`,
+            {method: "DELETE"}
+        )
 
         setTasks(tasks.filter((task) => task.id !== id))
     }
 
     // Toggle Reminder
-    const toggleReminder = (id) => {
+    // na backendzie
+    const toggleReminder = async (id) => {
+        const taskToToggle = await fetchTask(id)
+        const updTask = {...taskToToggle, reminder: !taskToToggle.reminder}
+
+        const res = await fetch(
+            `http://localhost:5000/tasks/${id}`,
+            {
+                method: "PUT",
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify(updTask)
+            }
+        )
+
+        const data = await res.json()
+
+        // na frontendzie
         setTasks(
             tasks.map((task) =>
-            task.id === id ? {...task, reminder: !task.reminder} : task
+            task.id === id ? {...task, reminder: data.reminder} : task
             )
         )
     }
